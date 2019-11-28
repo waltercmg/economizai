@@ -69,7 +69,7 @@ func main() {
     router.HandleFunc("/contato/{id}", GetPerson).Methods("GET")
     router.HandleFunc("/contato/{id}", CreatePerson).Methods("POST")
     router.HandleFunc("/contato/{id}", DeletePerson).Methods("DELETE")
-    port := os.Getenv("PORT") //Get port from .env file, we did not specify any port so this should return an empty string when tested locally
+    port := os.Getenv("PORT") 
 	if port == "" {
 		port = "8000" //localhost
 	}

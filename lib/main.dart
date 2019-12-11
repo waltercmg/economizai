@@ -1,0 +1,100 @@
+import 'dart:async';
+//import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:xml/xml.dart' as xml;
+ 
+import 'models/produto.dart';
+ 
+void main() {
+  runApp(new MyApp());
+}
+ 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Economizai',
+      home: new HomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+ 
+class HomePage extends StatefulWidget {
+  var produtos = List<Produto>();
+ 
+  HomePage() {
+    produtos = [];
+    produtos
+        .add(Produto(nome: "Macarrão Vitarella", preco: "2.25", salvar: true));
+    produtos.add(Produto(nome: "Feijão Turquesa", preco: "6.5", salvar: true));
+    produtos.add(Produto(nome: "Coca Cola 355", preco: "1.80", salvar: true));
+  }
+ 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+ 
+class _HomePageState extends State<HomePage> {
+  String qrcode = "";
+ 
+  void adicionar(String nome, String preco) {
+    setState(() {
+      widget.produtos.add(Produto(nome: nome, preco: preco, salvar: true));
+    });
+  }
+ 
+  Future ler_qrcode() async {
+    qrcode =
+        await FlutterBarcodeScanner.scanBarcode("#004297", "Cancelar", true);
+    if (!qrcode.startsWith('http://nfce.sefaz.pe.gov.br/')) {
+      qrcode =
+          'http://nfce.sefaz.pe.gov.br/nfce/consulta?p=26191145543915006112650160000846161993009980|2|1|1|5DA87AC4A0913EF27664A556AE70B1EAF80292E2';
+    }
+    final response = await http.get(qrcode);
+    if (response.statusCode == 200) {
+      widget.produtos.clear();
+      var document = xml.parse(response.body);
+      var titles = document.findAllElements('prod');
+      titles.forEach((node) => adicionar(node.findElements('xProd').single.text,
+          node.findElements('vProd').single.text));
+    } else {
+      // If that response was not OK, throw an error.
+      throw Exception('Failed to load post');
+    }
+  }
+ 
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Economizai"),
+      ),
+      body: ListView.builder(
+        itemCount: widget.produtos.length,
+        itemBuilder: (BuildContext ctx, int index) {
+          final produto = widget.produtos[index];
+          return CheckboxListTile(
+            title: Text(produto.nome + "\nR\$" + produto.preco),
+            key: Key(produto.nome),
+            value: produto.salvar,
+            onChanged: (value) {
+              setState(() {
+                produto.salvar = value;
+              });
+              print(value);
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ler_qrcode,
+        child: Icon(Icons.camera_enhance),
+      ),
+    );
+  }
+}
+ 
+

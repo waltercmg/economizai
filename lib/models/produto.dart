@@ -1,7 +1,8 @@
 class Produto{
-  String nome;
-  String preco;
+  String codigo;
+  String nome;  
+  String unidade;
   bool salvar;
 
-  Produto({this.nome, this.preco, this.salvar});
+  Produto({this.codigo, this.nome, this.unidade, this.salvar});
 }

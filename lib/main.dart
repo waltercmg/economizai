@@ -5,13 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:xml/xml.dart' as xml;
- 
+
 import 'models/produto.dart';
- 
+
 void main() {
   runApp(new MyApp());
 }
- 
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
     );
   }
 }
- 
+
 class HomePage extends StatefulWidget {
   var produtos = List<Produto>();
- 
+
   HomePage() {
     produtos = [];
     /*produtos
@@ -33,26 +33,39 @@ class HomePage extends StatefulWidget {
     produtos.add(Produto(nome: "Feijão Turquesa", preco: "6.5", salvar: true));
     produtos.add(Produto(nome: "Coca Cola 355", preco: "1.80", salvar: true));*/
   }
- 
+
   @override
   _HomePageState createState() => _HomePageState();
 }
- 
+
 class _HomePageState extends State<HomePage> {
   String qrcode = "";
   var icone = Icons.camera_enhance;
   bool salvar = false;
-   
+
   void adicionar(String codigo, String nome, String unidade) {
     setState(() {
-      widget.produtos.add(Produto(id: codigo, nome: nome, unidade: unidade, salvar: true));
+      widget.produtos
+          .add(Produto(id: codigo, nome: nome, unidade: unidade, salvar: true));
     });
     icone = Icons.cloud_upload;
     salvar = true;
   }
- 
+
+  Future<String> incluirProduto() async {
+    var client = new http.Client();
+    try {
+      var uriResponse = await client.post(
+          'http://familiai-servicos.herokuapp.com/produto/',
+          body: {'id': '12345678', 'nome': 'biscoito goiaba', 'unidade': 'un'});
+      print(await client.get(uriResponse.body));
+    } finally {
+      client.close();
+    }
+  }
+
   Future lerQrcode() async {
-    if(!salvar){
+    if (!salvar) {
       qrcode =
           await FlutterBarcodeScanner.scanBarcode("#004297", "Cancelar", true);
       if (!qrcode.startsWith('http://nfce.sefaz.pe.gov.br/')) {
@@ -64,7 +77,8 @@ class _HomePageState extends State<HomePage> {
         widget.produtos.clear();
         var document = xml.parse(response.body);
         var titles = document.findAllElements('prod');
-        titles.forEach((node) => adicionar(node.findElements('cProd').single.text,
+        titles.forEach((node) => adicionar(
+            node.findElements('cProd').single.text,
             node.findElements('xProd').single.text,
             node.findElements('uCom').single.text));
       } else {
@@ -72,11 +86,11 @@ class _HomePageState extends State<HomePage> {
         throw Exception('Failed to load post');
       }
     } else {
-      for (var p in widget.produtos){
-        
-      }
+      print("Entrou no ELSE");
+      incluirProduto();
+      //for (var p in widget.produtos) {}
     }
-  } 
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,10 +117,8 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: lerQrcode,
         child: Icon(icone),
-      ),     
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
- 
-

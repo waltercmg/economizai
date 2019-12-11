@@ -55,10 +55,16 @@ class _HomePageState extends State<HomePage> {
   Future<String> incluirProduto() async {
     var client = new http.Client();
     try {
-      var uriResponse = await client.post(
-          'http://familiai-servicos.herokuapp.com/produto/',
-          body: {'id': '12345678', 'nome': 'biscoito goiaba', 'unidade': 'un'});
-      print(await client.get(uriResponse.body));
+      print("ANTES");
+      var uriResponse = await client
+          .post("https://familiai-servicos.herokuapp.com/produto/", body: {
+        "id": "1234533678",
+        "nome": "biscoito goiaba",
+        "unidade": "un"
+      });
+      print("DEPOIS");
+      //print(await client.get(uriResponse.body));
+      print("DEPOIS 2");
     } finally {
       client.close();
     }

@@ -28,10 +28,10 @@ class HomePage extends StatefulWidget {
  
   HomePage() {
     produtos = [];
-    produtos
+    /*produtos
         .add(Produto(nome: "Macarrão Vitarella", preco: "2.25", salvar: true));
     produtos.add(Produto(nome: "Feijão Turquesa", preco: "6.5", salvar: true));
-    produtos.add(Produto(nome: "Coca Cola 355", preco: "1.80", salvar: true));
+    produtos.add(Produto(nome: "Coca Cola 355", preco: "1.80", salvar: true));*/
   }
  
   @override
@@ -40,33 +40,44 @@ class HomePage extends StatefulWidget {
  
 class _HomePageState extends State<HomePage> {
   String qrcode = "";
- 
-  void adicionar(String nome, String preco) {
+  var icone = Icons.camera_enhance;
+  bool salvar = false;
+   
+  void adicionar(String codigo, String nome, String unidade) {
     setState(() {
-      widget.produtos.add(Produto(nome: nome, preco: preco, salvar: true));
+      widget.produtos.add(Produto(id: codigo, nome: nome, unidade: unidade, salvar: true));
     });
+    icone = Icons.cloud_upload;
+    salvar = true;
   }
  
-  Future ler_qrcode() async {
-    qrcode =
-        await FlutterBarcodeScanner.scanBarcode("#004297", "Cancelar", true);
-    if (!qrcode.startsWith('http://nfce.sefaz.pe.gov.br/')) {
+  Future lerQrcode() async {
+    if(!salvar){
       qrcode =
-          'http://nfce.sefaz.pe.gov.br/nfce/consulta?p=26191145543915006112650160000846161993009980|2|1|1|5DA87AC4A0913EF27664A556AE70B1EAF80292E2';
-    }
-    final response = await http.get(qrcode);
-    if (response.statusCode == 200) {
-      widget.produtos.clear();
-      var document = xml.parse(response.body);
-      var titles = document.findAllElements('prod');
-      titles.forEach((node) => adicionar(node.findElements('xProd').single.text,
-          node.findElements('vProd').single.text));
+          await FlutterBarcodeScanner.scanBarcode("#004297", "Cancelar", true);
+      if (!qrcode.startsWith('http://nfce.sefaz.pe.gov.br/')) {
+        qrcode =
+            'http://nfce.sefaz.pe.gov.br/nfce/consulta?p=26191145543915006112650160000846161993009980|2|1|1|5DA87AC4A0913EF27664A556AE70B1EAF80292E2';
+      }
+      final response = await http.get(qrcode);
+      if (response.statusCode == 200) {
+        widget.produtos.clear();
+        var document = xml.parse(response.body);
+        var titles = document.findAllElements('prod');
+        titles.forEach((node) => adicionar(node.findElements('cProd').single.text,
+            node.findElements('xProd').single.text,
+            node.findElements('uCom').single.text));
+      } else {
+        // If that response was not OK, throw an error.
+        throw Exception('Failed to load post');
+      }
     } else {
-      // If that response was not OK, throw an error.
-      throw Exception('Failed to load post');
+      for (var p in widget.produtos){
+        
+      }
     }
-  }
- 
+  } 
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +88,7 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (BuildContext ctx, int index) {
           final produto = widget.produtos[index];
           return CheckboxListTile(
-            title: Text(produto.nome + "\nR\$" + produto.preco),
+            title: Text(produto.id + "\n - " + produto.nome),
             key: Key(produto.nome),
             value: produto.salvar,
             onChanged: (value) {
@@ -90,9 +101,10 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: ler_qrcode,
-        child: Icon(Icons.camera_enhance),
-      ),
+        onPressed: lerQrcode,
+        child: Icon(icone),
+      ),     
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:xml/xml.dart' as xml;
+import 'dart:convert';
 
 import 'models/produto.dart';
 
@@ -54,17 +55,18 @@ class _HomePageState extends State<HomePage> {
 
   Future<String> incluirProduto() async {
     var client = new http.Client();
+    Map conteudo = {
+      "codigo": "1234533678",
+      "nome": "biscoito goiaba",
+      "unidade": "un"
+    };
     try {
       print("ANTES");
-      var uriResponse = await client
-          .post("https://familiai-servicos.herokuapp.com/produto/", body: {
-        "id": "1234533678",
-        "nome": "biscoito goiaba",
-        "unidade": "un"
-      });
-      print("DEPOIS");
+      var uriResponse = await client.post(
+          "https://familiai-servicos.herokuapp.com/produto/",
+          headers: {"content-type": "application/json"},
+          body: jsonEncode(conteudo));
       //print(await client.get(uriResponse.body));
-      print("DEPOIS 2");
     } finally {
       client.close();
     }

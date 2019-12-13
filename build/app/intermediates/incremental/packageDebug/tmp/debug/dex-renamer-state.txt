@@ -1,4 +1,4 @@
-#Thu Dec 12 17:41:00 BRT 2019
+#Fri Dec 13 11:13:24 BRT 2019
 base.0=/home/00937325465/familiai/flutter/economizai/build/app/intermediates/transforms/dexMerger/debug/0
 path.0=classes.dex
 renamed.0=classes.dex

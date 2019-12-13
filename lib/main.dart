@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:xml/xml.dart' as xml;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'models/produto.dart';
+import 'models/feira.dart';
 
 void main() {
   runApp(new MyApp());
@@ -72,6 +74,32 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<String> incluirFeira() async {
+    var client = new http.Client();
+    DateTime now = DateTime.now();
+    String data = DateFormat('yyyy-MM-dd').format(now);
+    Map feira = {"data": data};
+    Feira f;
+    try {
+      var uriResponse = await client.post(
+          "https://familiai-servicos.herokuapp.com/feira/",
+          headers: {"content-type": "application/json"},
+          body: jsonEncode(feira));
+      if (uriResponse.statusCode == 200) {
+        // If server returns an OK response, parse the JSON.
+        f = Feira.fromJson(json.decode(uriResponse.body));
+        print(">>> " + uriResponse.body);
+        print("ID da feira criada: " + f.id.toString());
+      } else {
+        // If that response was not OK, throw an error.
+        throw Exception('Failed to load post');
+      }
+      //print(await client.get(uriResponse.body));
+    } finally {
+      client.close();
+    }
+  }
+
   Future lerQrcode() async {
     if (!salvar) {
       qrcode =
@@ -95,7 +123,7 @@ class _HomePageState extends State<HomePage> {
       }
     } else {
       print("Entrou no ELSE");
-      incluirProduto();
+      incluirFeira();
       //for (var p in widget.produtos) {}
     }
   }

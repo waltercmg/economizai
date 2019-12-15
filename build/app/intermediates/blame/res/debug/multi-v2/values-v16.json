@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/home/00937325465/familiai/flutter/economizai/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
+            "outputFile": "C:\\Users\\walter\\Documents\\Prog\\Flutter\\economizai\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v16\\values-v16.xml",
             "map": [
                 {
-                    "source": "/home/00937325465/.gradle/caches/transforms-1/files-1.1/appcompat-1.0.2.aar/4e77a8e6b8af56ba3bef0bec7c415255/res/values-v16/values-v16.xml",
+                    "source": "C:\\Users\\walter\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-1.0.2.aar\\8f54788f1fd93b09633567c3cc9f388c\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "/home/00937325465/.gradle/caches/transforms-1/files-1.1/core-1.0.1.aar/d3ef98a4e4c0eeb5ce4c02147d8e0450/res/values-v16/values-v16.xml",
+                    "source": "C:\\Users\\walter\\.gradle\\caches\\transforms-1\\files-1.1\\core-1.0.1.aar\\cafab08b3cc3ee3d8e85845c7c8bad06\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

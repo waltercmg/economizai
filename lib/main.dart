@@ -46,10 +46,13 @@ class _HomePageState extends State<HomePage> {
   var icone = Icons.camera_enhance;
   bool salvar = false;
 
-  void adicionar(String codigo, String nome, String unidade) {
+  void adicionar(
+      String codigo, String nome, String unidade, String valorUnitario) {
     setState(() {
-      widget.produtos
-          .add(Produto(id: codigo, nome: nome, unidade: unidade, salvar: true));
+      Produto prod = Produto(
+          id: null, codigo: codigo, nome: nome, unidade: unidade, salvar: true);
+      prod.valorUnitario = double.parse(valorUnitario);
+      widget.produtos.add(prod);
     });
     icone = Icons.cloud_upload;
     salvar = true;
@@ -79,23 +82,51 @@ class _HomePageState extends State<HomePage> {
     DateTime now = DateTime.now();
     String data = DateFormat('yyyy-MM-dd').format(now);
     Map feira = {"data": data};
+    Map produto, itemFeira;
     Feira f;
+    Produto p;
     try {
       var uriResponse = await client.post(
           "https://familiai-servicos.herokuapp.com/feira/",
           headers: {"content-type": "application/json"},
           body: jsonEncode(feira));
       if (uriResponse.statusCode == 200) {
-        // If server returns an OK response, parse the JSON.
         f = Feira.fromJson(json.decode(uriResponse.body));
-        print(">>> " + uriResponse.body);
-        print("ID da feira criada: " + f.id.toString());
+        for (Produto prod in widget.produtos) {
+          produto = {
+            "codigo": prod.codigo,
+            "nome": prod.nome,
+            "unidade": prod.unidade,
+          };
+          uriResponse = await client.post(
+              "https://familiai-servicos.herokuapp.com/produto/",
+              headers: {"content-type": "application/json"},
+              body: jsonEncode(produto));
+          if (uriResponse.statusCode == 200) {
+            p = Produto.fromJson(json.decode(uriResponse.body));
+            itemFeira = {
+              "id_feira": f.id,
+              "id_produto": p.id,
+              "valor_unitario": prod.valorUnitario
+            };
+            print(jsonEncode(itemFeira));
+            uriResponse = await client.post(
+                "https://familiai-servicos.herokuapp.com/item_feira/",
+                headers: {"content-type": "application/json"},
+                body: jsonEncode(itemFeira));
+          }
+        }
       } else {
         // If that response was not OK, throw an error.
         throw Exception('Failed to load post');
       }
       //print(await client.get(uriResponse.body));
     } finally {
+      setState(() {
+        widget.produtos = [];
+        icone = Icons.camera_enhance;
+        salvar = false;
+      });
       client.close();
     }
   }
@@ -116,7 +147,8 @@ class _HomePageState extends State<HomePage> {
         titles.forEach((node) => adicionar(
             node.findElements('cProd').single.text,
             node.findElements('xProd').single.text,
-            node.findElements('uCom').single.text));
+            node.findElements('uCom').single.text,
+            node.findElements('vUnCom').single.text));
       } else {
         // If that response was not OK, throw an error.
         throw Exception('Failed to load post');
@@ -138,7 +170,7 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (BuildContext ctx, int index) {
           final produto = widget.produtos[index];
           return CheckboxListTile(
-            title: Text(produto.id + "\n - " + produto.nome),
+            title: Text(produto.codigo + "\n - " + produto.nome),
             key: Key(produto.nome),
             value: produto.salvar,
             onChanged: (value) {

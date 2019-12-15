@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/home/00937325465/familiai/flutter/economizai/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-large-v4/values-large-v4.xml",
+            "outputFile": "C:\\Users\\walter\\Documents\\Prog\\Flutter\\economizai\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
             "map": [
                 {
-                    "source": "/home/00937325465/.gradle/caches/transforms-1/files-1.1/appcompat-1.0.2.aar/4e77a8e6b8af56ba3bef0bec7c415255/res/values-large-v4/values-large-v4.xml",
+                    "source": "C:\\Users\\walter\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-1.0.2.aar\\8f54788f1fd93b09633567c3cc9f388c\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "/home/00937325465/.gradle/caches/transforms-1/files-1.1/material-1.0.0.aar/6c2592fc63d34b27e3643dd4bd22760b/res/values-large-v4/values-large-v4.xml",
+                    "source": "C:\\Users\\walter\\.gradle\\caches\\transforms-1\\files-1.1\\material-1.0.0.aar\\d694840ee21470e74c228cbdee655f1e\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

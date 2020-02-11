@@ -45,6 +45,33 @@ class _HomePageState extends State<HomePage> {
   String qrcode = "";
   var icone = Icons.camera_enhance;
   bool salvar = false;
+  int _selectedIndex = 0;
+  bool _botaoCarregarVisivel = false;
+
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Home',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 2: School',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    lerQrcode();
+    setState(() {
+      _selectedIndex = index;
+      _botaoCarregarVisivel = true;
+    });
+  }
 
   void adicionar(
       String codigo, String nome, String unidade, String valorUnitario) {
@@ -157,10 +184,11 @@ class _HomePageState extends State<HomePage> {
       print("Entrou no ELSE");
       incluirFeira();
       //for (var p in widget.produtos) {}
+      _botaoCarregarVisivel = false;
     }
   }
 
-  Widget build(BuildContext context) {
+  /*Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Economizai"),
@@ -185,6 +213,56 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: lerQrcode,
         child: Icon(icone),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }*/
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Economizai"),
+      ),
+      body: ListView.builder(
+        itemCount: widget.produtos.length,
+        itemBuilder: (BuildContext ctx, int index) {
+          final produto = widget.produtos[index];
+          return CheckboxListTile(
+            title: Text(produto.codigo + "\n - " + produto.nome),
+            key: Key(produto.nome),
+            value: produto.salvar,
+            onChanged: (value) {
+              setState(() {
+                produto.salvar = value;
+              });
+              print(value);
+            },
+          );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_enhance),
+            title: Text('Nova Feira'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('Minhas Feiras'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: new Visibility(
+        visible: _botaoCarregarVisivel,
+        child: new FloatingActionButton(
+            onPressed: lerQrcode, child: Icon(Icons.cloud_upload)),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

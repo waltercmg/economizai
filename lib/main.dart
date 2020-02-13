@@ -170,6 +170,37 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         widget.produtos.clear();
         var document = xml.parse(response.body);
+        var infoNota = document.findAllElements('infNFe');
+        var emit = document.findAllElements('emit');
+        var enderEmit = document.findAllElements('enderEmit');
+        var ide = document.findAllElements('ide');
+        String idNfe = "";
+        String cnpj = "";
+        String endereco = "";
+        String nome = "";
+        DateTime dataEmissao;
+        for (var info in infoNota) {
+          print("INFO: " + info.toString());
+          for (var atr in info.attributes) {
+            if (atr.name.toString() == "Id") {
+              idNfe = atr.value;
+            }
+          }
+        }
+        for (var id in ide) {
+          var temp = id.findElements('dhEmi').single.text.split("-");
+          dataEmissao = DateTime(int.tryParse(temp[0]), int.tryParse(temp[1]),
+              int.tryParse(temp[2].substring(0, 1)));
+          print("Emissao: " + dataEmissao.toString());
+        }
+        for (var em in emit) {
+          cnpj = em.findElements('CNPJ').single.text;
+          nome = em.findElements('xNome').toString();
+        }
+        for (var end in enderEmit) {
+          endereco = end.findElements('xLgr').toString();
+        }
+        print("ID NOTA: " + idNfe);
         var titles = document.findAllElements('prod');
         titles.forEach((node) => adicionar(
             node.findElements('cProd').single.text,

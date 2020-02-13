@@ -179,6 +179,7 @@ class _HomePageState extends State<HomePage> {
         String endereco = "";
         String nome = "";
         DateTime dataEmissao;
+        //teste
         for (var info in infoNota) {
           print("INFO: " + info.toString());
           for (var atr in info.attributes) {
